@@ -22,54 +22,64 @@ function renderCalendar() {
 
   calendarGrid.replaceChildren();
 
-const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-// Add empty cells before the first date.
-for (let space = 0; space < firstDay; space++) {
-  const emptyCell = document.createElement("div");
-  calendarGrid.appendChild(emptyCell);
-}
+  // Calculate commemorative dates for the selected year.
+  const eventDates = daysData.map((event) => ({
+    name: event.name,
+    date: calculateDayDate(event, currentYear),
+  }));
 
-// Add one cell for each date.
-for (let day = 1; day <= daysInMonth; day++) {
-  const dayCell = document.createElement("div");
-  dayCell.classList.add("calendar-day");
-  dayCell.textContent = day;
-
-  if (
-  day === today.getDate() &&
-  currentMonth === today.getMonth() &&
-  currentYear === today.getFullYear()
-) {
-  dayCell.classList.add("today");
-}
-for (const event of daysData) {
-  const eventDate = calculateDayDate(event, currentYear);
-
-  if (
-    eventDate !== null &&
-    eventDate.getMonth() === currentMonth &&
-    eventDate.getDate() === day
-  ) {
-    const eventName = document.createElement("p");
-    eventName.classList.add("event-name");
-    eventName.textContent = event.name;
-
-    dayCell.appendChild(eventName);
+  // Add empty cells before the first date.
+  for (let space = 0; space < firstDay; space++) {
+    const emptyCell = document.createElement("div");
+    emptyCell.setAttribute("aria-hidden", "true");
+    calendarGrid.appendChild(emptyCell);
   }
-}
-  calendarGrid.appendChild(dayCell);
-}
 
-monthSelect.value = currentMonth;
-yearSelect.value = currentYear;
+  // Add one cell for each date.
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dayCell = document.createElement("div");
+    dayCell.classList.add("calendar-day");
 
-previousButton.disabled =
-  currentYear === Number(yearSelect.min) && currentMonth === 0;
+    const dateLabel = document.createElement("span");
+    dateLabel.textContent = day;
+    dayCell.appendChild(dateLabel);
 
-nextButton.disabled =
-  currentYear === Number(yearSelect.max) && currentMonth === 11;
+    if (
+      day === today.getDate() &&
+      currentMonth === today.getMonth() &&
+      currentYear === today.getFullYear()
+    ) {
+      dayCell.classList.add("today");
+      dayCell.setAttribute("aria-current", "date");
+    }
+
+    for (const event of eventDates) {
+      if (
+        event.date !== null &&
+        event.date.getMonth() === currentMonth &&
+        event.date.getDate() === day
+      ) {
+        const eventName = document.createElement("p");
+        eventName.classList.add("event-name");
+        eventName.textContent = event.name;
+        dayCell.appendChild(eventName);
+      }
+    }
+
+    calendarGrid.appendChild(dayCell);
+  }
+
+  monthSelect.value = currentMonth;
+  yearSelect.value = currentYear;
+
+  previousButton.disabled =
+    currentYear === Number(yearSelect.min) && currentMonth === 0;
+
+  nextButton.disabled =
+    currentYear === Number(yearSelect.max) && currentMonth === 11;
 }
 
 renderCalendar();
