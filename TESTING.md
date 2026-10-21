@@ -2,9 +2,7 @@
 
 ## 1. Unit Tests
 
-**Requirement:** At least one non-trivial unit test must test code used by the project.
-
-**How tested:** Unit tests in `common.test.mjs`.
+Unit tests are in `common.test.mjs`.
 
 Run:
 
@@ -21,138 +19,139 @@ The tests check:
 - The second Tuesday of October 2030 is 8 October.
 - The function returns `null` when the fifth Monday of February 2026 does not exist.
 
-**Status:** Implemented. All six unit tests passed.
+**Status:** All six unit tests passed.
 
-## 2. Calendar Display
+## 2. Calendar Display and Layout
 
-**Requirement:** The website displays the current month when loaded, with each day shown in a dynamically generated calendar.
+**How tested:**
 
-**How tested:** Open the website and check that the displayed month and year match the current date. Confirm that every day of the month is displayed.
+- Open the website and check that the displayed month and year match the current date.
+- Check that every day of the month is displayed.
+- Open October 2024 and verify that the calendar has five rows and seven columns.
+- Confirm that 1 October is Tuesday and 31 October is Thursday.
+- Check that blank cells appear before and after the dates where needed.
+- Check the following months:
+  - December 2024: 1 December is Sunday and 31 December is Tuesday.
+  - February 2025: 1 February is Saturday and 28 February is Friday.
+  - May 2025: 1 May is Thursday and 31 May is Saturday.
+  - February 2026: 1 February is Sunday and 28 February is Saturday.
 
-**Status:** Implemented. Manual verification documented.
+## 3. Month Navigation and Selection
 
-## 3. Calendar Layout
+**How tested:**
 
-**Requirement:** The calendar displays weeks in seven columns, starting on Sunday, with the correct number of rows and no unnecessary days from other months.
+- Click Next Month and Previous Month and check that the displayed month changes correctly.
+- Navigate from December to January and confirm that the year increases.
+- Navigate from January to December and confirm that the year decreases.
+- Repeat the navigation several times.
+- Select October 2024, May 2030, and February 2026 using the month and year controls.
+- Check that the correct month, year, and commemorative days are displayed after each selection.
+- Check that the navigation buttons still work after selecting a different month and year.
 
-**How tested:** Open October 2024 and verify that the calendar has five rows and seven columns. Check that the first date is Tuesday 1 October and the last date is Thursday 31 October. Sunday and Monday before the first day, and Friday and Saturday after the last day, may be blank.
+## 4. Commemorative Day Calculations
 
-Also verify these months:
+**How tested:**
 
-- December 2024: Sunday 1 December to Tuesday 31 December.
-- February 2025: Saturday 1 February to Friday 28 February.
-- May 2025: Thursday 1 May to Saturday 31 May.
-- February 2026: Sunday 1 February to Saturday 28 February.
+- Open October 2024 and check that Ada Lovelace Day appears on 8 October and World Lemur Day on 25 October.
+- Open October 2020 and check that Ada Lovelace Day appears on 13 October and World Lemur Day on 30 October.
+- Open May 2030 and check that International Binturong Day appears on 11 May.
+- Check additional years to confirm that commemorative dates change according to their patterns in `days.json`.
 
-**Status:** Layout test cases documented.
+## 5. Dynamic Data
 
-## 4. Previous and Next Month Navigation
+**How tested:**
 
-**Requirement:** The previous and next buttons change the displayed month by one month per click and continue working across year boundaries.
+- Review the code to confirm that commemorative days are loaded from `days.json`.
+- Check that `calculateDayDate()` is used to calculate the event dates.
+- If practical, temporarily add an event to `days.json`, reload the website, and verify that it appears on the expected date.
+- Remove the temporary event after testing.
 
-**How tested:** Click Next Month from December and confirm that January of the following year appears. Click Previous Month from January and confirm that December of the previous year appears. Repeat the actions several times and verify the displayed month and year.
+## 6. iCalendar Generation
 
-**Status:** Navigation test cases documented.
+Created `generate-ical.mjs` to generate `days.ics` for 2020–2030 inclusive.
 
-## 5. Month and Year Selection
-
-**Requirement:** Users can jump directly to a selected month and year.
-
-**How tested:** Select October 2024 and verify the displayed month and commemorative days. Repeat with May 2030 and February 2026. Check that the previous and next buttons continue to work after changing the selected month and year.
-
-**Status:** Month and year selection test cases documented.
-
-## 6. Commemorative Day Calculations
-
-**Requirement:** Commemorative days are calculated dynamically from `days.json` and display on the correct dates for any year.
-
-**How tested:** Check the following examples in the website:
-
-- October 2024: Ada Lovelace Day on 8 October and World Lemur Day on 25 October.
-- October 2020: Ada Lovelace Day on 13 October and World Lemur Day on 30 October.
-- May 2030: International Binturong Day on 11 May.
-
-Check additional years to confirm that dates are calculated from the patterns in `days.json`, rather than hard-coded.
-
-**Status:** Date-calculation unit tests passed. Website test cases documented.
-
-## 7. Dynamic Data
-
-**Requirement:** The calendar must continue working when commemorative days are added to or removed from `days.json`, without requiring hard-coded logic for individual days.
-
-**How tested:** Review the implementation to confirm that it reads the JSON data and uses `calculateDayDate()` to calculate each event date. If practical, test with a temporary additional event and verify that it appears on the expected date.
-
-**Status:** Dynamic-data test procedure documented.
-
-## 8. iCalendar Generation
-
-**Requirement:** For a team of at least two, a Node.js script generates `days.ics` with one whole-day event for each commemorative day and year from 2020 to 2030 inclusive.
-
-**How tested:** Run:
+Run:
 
 ```bash
 npm run generate-ical
 ```
 
-Check the number of generated events:
+Checked the generated events using:
 
 ```bash
 grep -c "BEGIN:VEVENT" days.ics
 grep -c "DTSTART;VALUE=DATE" days.ics
 ```
 
-With the current five entries in `days.json`, both commands return `55`.
+Both commands returned `55`.
 
-Inspect the generated file to confirm that events have `SUMMARY` and `DTSTART;VALUE=DATE` fields and do not contain `DTEND` or timed start fields.
+**Additional checks:**
 
-**Status:** Implemented and tested. The generator created 55 events, and both event-count checks returned 55.
+- Confirm that each event contains a `SUMMARY` field.
+- Confirm that each event contains a `DTSTART;VALUE=DATE` field.
+- Check that the file does not contain `DTEND` or timed start fields.
+- Inspect sample events and compare their dates with the website.
 
-## 9. Shared Date-Calculation Logic
+**Status:** The generator created 55 events, and both event-count checks returned 55.
 
-**Requirement:** The website and the iCal generator must use the same date-calculation logic.
+## 7. Shared Date-Calculation Logic
 
-**How tested:** Inspect `web.mjs` and `generate-ical.mjs` to confirm that both import `calculateDayDate()` from `common.mjs`.
+**How tested:**
 
-**Status:** Shared date-calculation logic implemented.
+- Check `web.mjs` and `generate-ical.mjs`.
+- Confirm that both import `calculateDayDate()` from `common.mjs`.
 
-## 10. Google Calendar Import
+## 8. Google Calendar Import
 
-**Requirement:** The generated iCalendar file must import into Google Calendar with the correct dates and whole-day events.
+**How tested:**
 
-**How tested:** Import `days.ics` into a new test calendar in Google Calendar. Compare the displayed dates against the website for the dates listed in the project requirements. Confirm that events are whole-day events.
+- Generate `days.ics` using `npm run generate-ical`.
+- Open Google Calendar.
+- Create a separate test calendar.
+- Import `days.ics` into the test calendar.
+- Check that the events appear on the correct dates.
+- Compare selected imported events with the website.
+- Confirm that the imported events are whole-day events.
 
-**Status:** Import test procedure documented.
+## 9. Accessibility
 
-## 11. Accessibility
+**How tested:**
 
-**Requirement:** Every view of the website must achieve 100% accessibility in Lighthouse Desktop mode.
+- Open the deployed website in Chrome.
+- Open Chrome DevTools and select Lighthouse.
+- Choose Desktop and Accessibility, then generate a report.
+- Check whether the Accessibility score is 100%.
+- Repeat for February 2026 and months containing commemorative days.
+- Use the keyboard to navigate through the controls.
+- Check that focus indicators are visible.
+- Check that form controls have accessible labels.
+- Check that event text is readable and date information is understandable.
 
-**How tested:** Open the deployed website, launch Chrome DevTools, select Lighthouse, choose Desktop and Accessibility, and generate a report. Repeat for multiple months, including February 2026 and months containing commemorative days. Verify that the Accessibility score is 100%.
+## 10. Responsive Layout
 
-Also check keyboard navigation, visible focus indicators, form labels, readable event text, and accessible date information.
+**How tested:**
 
-**Status:** Accessibility test procedure documented.
+- Open the website at desktop and mobile viewport sizes.
+- Check that all seven weekday columns remain visible.
+- Check that the month and year controls and navigation buttons can be used.
+- Check that event names do not overflow their cells.
+- Confirm that the calendar remains readable at different screen sizes.
 
-## 12. Responsive Layout
+## 11. Code Quality
 
-**Requirement:** The calendar should remain usable at different screen sizes.
+**How tested:**
 
-**How tested:** Open the website at desktop and mobile viewport sizes. Check that all seven weekday columns remain visible, the controls can be used, and event names do not overflow their cells.
+- Review the JavaScript and CSS files.
+- Check for unused functions, imports, variables, and styles.
+- Remove unnecessary placeholder comments and dead code.
+- Check indentation and code readability.
+- Run `npm test` after making changes.
 
-**Status:** Responsive-layout test procedure documented.
+## 12. Deployment
 
-## 13. Code Quality
+**How tested:**
 
-**Requirement:** All JavaScript and CSS must be used, with no dead code. Code must be correctly indented and understandable.
-
-**How tested:** Review the source files and remove unused functions, imports, variables, styles, and placeholder comments. Run the unit tests after changes.
-
-**Status:** Code-review checklist documented.
-
-## 14. Deployment
-
-**Requirement:** The website must be hosted on the internet and automatically deployed when changes are merged into the GitHub repository.
-
-**How tested:** Open the deployed website. Merge a test change through the project's normal workflow and verify that deployment completes and the updated website is available.
-
-**Status:** Deployment test procedure documented.
+- Open the deployed website and check that it loads correctly.
+- Test the calendar display, navigation, and commemorative dates on the deployed version.
+- Check the repository's deployment workflow.
+- After merging a change, verify that deployment completes and the updated website is available.
