@@ -81,11 +81,11 @@ function renderCalendar() {
     calendarGrid.appendChild(dayCell);
   }
 
-  // Add trailing empty cells to complete the calendar rows.
+  // Add trailing empty cells to complete the final week.
   const totalCells = firstDay + daysInMonth;
-  const trailingCells = (7 - (totalCells % 7)) % 7;
+  const trailingSpaces = (7 - (totalCells % 7)) % 7;
 
-  for (let space = 0; space < trailingCells; space++) {
+  for (let space = 0; space < trailingSpaces; space++) {
     const emptyCell = document.createElement("div");
     emptyCell.setAttribute("aria-hidden", "true");
     calendarGrid.appendChild(emptyCell);
