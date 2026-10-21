@@ -81,6 +81,16 @@ function renderCalendar() {
     calendarGrid.appendChild(dayCell);
   }
 
+  // Add trailing empty cells to complete the calendar rows.
+  const totalCells = firstDay + daysInMonth;
+  const trailingCells = (7 - (totalCells % 7)) % 7;
+
+  for (let space = 0; space < trailingCells; space++) {
+    const emptyCell = document.createElement("div");
+    emptyCell.setAttribute("aria-hidden", "true");
+    calendarGrid.appendChild(emptyCell);
+  }
+
   monthSelect.value = currentMonth;
   yearSelect.value = currentYear;
 }
