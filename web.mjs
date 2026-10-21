@@ -22,26 +22,35 @@ function renderCalendar() {
 
   calendarGrid.replaceChildren();
 
-  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  const firstDay = selectedDate.getDay();
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-  // Calculate commemorative dates for the selected year.
   const eventDates = daysData.map((event) => ({
     name: event.name,
     date: calculateDayDate(event, currentYear),
   }));
 
-  // Add empty cells before the first date.
+  // Add empty cells before the first day of the month.
   for (let space = 0; space < firstDay; space++) {
     const emptyCell = document.createElement("div");
     emptyCell.setAttribute("aria-hidden", "true");
     calendarGrid.appendChild(emptyCell);
   }
 
-  // Add one cell for each date.
+  // Create a calendar cell for each day of the month.
   for (let day = 1; day <= daysInMonth; day++) {
     const dayCell = document.createElement("div");
+    const date = new Date(currentYear, currentMonth, day);
+
     dayCell.classList.add("calendar-day");
+    dayCell.setAttribute(
+      "aria-label",
+      date.toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }),
+    );
 
     const dateLabel = document.createElement("span");
     dateLabel.textContent = day;
@@ -74,12 +83,6 @@ function renderCalendar() {
 
   monthSelect.value = currentMonth;
   yearSelect.value = currentYear;
-
-  previousButton.disabled =
-    currentYear === Number(yearSelect.min) && currentMonth === 0;
-
-  nextButton.disabled =
-    currentYear === Number(yearSelect.max) && currentMonth === 11;
 }
 
 renderCalendar();

@@ -1,34 +1,3 @@
-.weekdays,
-#calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-}
-
-.weekdays span {
-  padding: 12px;
-  text-align: center;
-  font-weight: bold;
-}
-
-.calendar-day {
-  min-height: 90px;
-  padding: 10px;
-  border: 1px solid #dce3e8;
-}
-
-.today {
-  background-color: #e6f5f5;
-  border: 2px solid #00858a;
-  font-weight: bold;
-}
-
-.event-name {
-  margin: 8px 0 0;
-  color: #006b70;
-  font-size: 0.85rem;
-  overflow-wrap: anywhere;
-}
-
 * {
   box-sizing: border-box;
 }
@@ -67,8 +36,8 @@ section {
 }
 
 #month-year {
-  margin: 0;
   min-width: 220px;
+  margin: 0;
   text-align: center;
 }
 
@@ -99,17 +68,49 @@ input:focus-visible {
   outline-offset: 3px;
 }
 
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 #year-select {
   width: 100px;
+}
+
+.weekdays,
+#calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 
 .weekdays {
   background: #edf2f7;
 }
 
+.weekdays span {
+  padding: 12px;
+  text-align: center;
+  font-weight: bold;
+}
+
 .calendar-day {
   min-width: 0;
   min-height: 110px;
+  padding: 10px;
+  border: 1px solid #dce3e8;
+}
+
+.today {
+  background-color: #e6f5f5;
+  border: 2px solid #00858a;
+  font-weight: bold;
+}
+
+.event-name {
+  margin: 8px 0 0;
+  color: #006b70;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
 }
 
 @media (max-width: 600px) {
@@ -139,9 +140,4 @@ input:focus-visible {
   .event-name {
     font-size: 0.7rem;
   }
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }

@@ -25,6 +25,7 @@ test("Finds the last Friday of October 2026", () => {
 
   const result = calculateDayDate(event, 2026);
 
+  assert.equal(result.getFullYear(), 2026);
   assert.equal(result.getMonth(), 9);
   assert.equal(result.getDate(), 30);
 });
@@ -52,6 +53,7 @@ test("Finds February 29 in leap year 2024", () => {
 
   const result = calculateDayDate(event, 2024);
 
+  assert.equal(result.getFullYear(), 2024);
   assert.equal(result.getMonth(), 1);
   assert.equal(result.getDate(), 29);
 });

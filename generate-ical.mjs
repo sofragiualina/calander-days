@@ -1,6 +1,3 @@
-// This is a placeholder file which shows how you can access functions and data defined in other files. You can delete the contents of the file once you have understood how it works.
-// It can be run with `node`.
-
 import { readFile, writeFile } from "node:fs/promises";
 import { calculateDayDate } from "./common.mjs";
 
@@ -30,11 +27,15 @@ function escapeICSText(text) {
 function createEvent(day, date) {
   const dateString = formatDate(date);
   const uid = `${dateString}-${encodeURIComponent(day.name)}@calendar-days`;
+  const timestamp = new Date()
+    .toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\.\d{3}Z$/, "Z");
 
   return [
     "BEGIN:VEVENT",
     `UID:${uid}`,
-    `DTSTAMP:${formatDate(new Date())}T000000Z`,
+    `DTSTAMP:${timestamp}`,
     `SUMMARY:${escapeICSText(day.name)}`,
     `DTSTART;VALUE=DATE:${dateString}`,
     "END:VEVENT",
