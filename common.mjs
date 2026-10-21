@@ -1,9 +1,3 @@
-// This is a placeholder file which shows how you can define functions which can be used from both a browser script and a node script. You can delete the contents of the file once you have understood how it works.
-
-export function getGreeting() {
-  return "Hello";
-}
-
 const monthNames = [
   "January",
   "February",
@@ -33,6 +27,10 @@ export function calculateDayDate(day, year) {
   const month = monthNames.indexOf(day.monthName);
   const weekday = dayNames.indexOf(day.dayName);
 
+  if (month === -1 || weekday === -1) {
+    throw new Error("Unknown month or weekday");
+  }
+
   const occurrences = {
     first: 1,
     second: 2,
@@ -41,35 +39,32 @@ export function calculateDayDate(day, year) {
     fifth: 5,
   };
 
-if (month === -1 || weekday === -1) {
-  throw new Error("Unknown month or weekday");
-}
+  // Find the last occurrence of a weekday in the month.
+  if (day.occurrence === "last") {
+    const lastDate = new Date(year, month + 1, 0);
+    const daysBack = (lastDate.getDay() - weekday + 7) % 7;
 
-if (day.occurrence === "last") {
-  const lastDate = new Date(year, month + 1, 0);
-  const lastWeekday = lastDate.getDay();
+    return new Date(year, month, lastDate.getDate() - daysBack);
+  }
 
-  const daysBack = (lastWeekday - weekday + 7) % 7;
+  const occurrence = occurrences[day.occurrence];
 
-  return new Date(year, month, lastDate.getDate() - daysBack);
-}
+  if (!occurrence) {
+    throw new Error("Unsupported date pattern");
+  }
 
-const occurrence = occurrences[day.occurrence];
+  // Find the first occurrence of the requested weekday.
+  const firstWeekday = new Date(year, month, 1).getDay();
+  const firstMatch = 1 + ((weekday - firstWeekday + 7) % 7);
 
-if (!occurrence) {
-  throw new Error("Unsupported date pattern");
-}
-const firstWeekday = new Date(year, month, 1).getDay();
+  // Move forward by the required number of weeks.
+  const date = firstMatch + (occurrence - 1) * 7;
+  const result = new Date(year, month, date);
 
-const firstMatch = 1 + (weekday - firstWeekday + 7) % 7;
+  // Return null if the requested occurrence does not exist.
+  if (result.getMonth() !== month) {
+    return null;
+  }
 
-const date = firstMatch + (occurrence - 1) * 7;
-
-const result = new Date(year, month, date);
-
-if (result.getMonth() !== month) {
-  return null;
-}
-
-return result;
+  return result;
 }
